@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Author;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class AuthorController extends Controller
 {
@@ -15,7 +16,12 @@ class AuthorController extends Controller
     {
         $authors = Author::all();
 
-        return Response::json(['data' => $authors], 200);
+        if(@empty($authors)) {
+            return Response::json(['data' => $authors], 200);
+        } else {
+            return Response::json(['message' => '404 Not Found'], 404);
+        }
+        
     }
 
     /**
@@ -23,7 +29,7 @@ class AuthorController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -31,7 +37,20 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $data = array();
+        $data['author_name'] = $request->author_name;
+        $data['author_contact_number'] = $request->country;
+        $data['author_country'] = $request->country;
+        $data['created_at'] = Carbon::now();
+
+        $author = Author::create($data);
+
+        if($author) {
+            return Response::json(['data' => 'Author Successfully Created'], 201);
+        } else {
+            return Response::json(['message' => 'Something Went Wrong'], 404);
+        }
+
     }
 
     /**
@@ -39,7 +58,13 @@ class AuthorController extends Controller
      */
     public function show(Author $author)
     {
-        //
+        $author = Author::find($author->id);
+
+        if(@empty($author)) {
+            return Response::json(['data' => $author], 200);
+        } else {
+            return Response::json(['message' => '404 Not Found'], 404);
+        }
     }
 
     /**
