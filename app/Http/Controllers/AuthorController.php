@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+
 
 class AuthorController extends Controller
 {
@@ -43,14 +45,27 @@ class AuthorController extends Controller
         $data['author_country'] = $request->country;
         $data['created_at'] = Carbon::now();
 
-        $author = Author::create($data);
 
-        if($author) {
-            return Response::json(['data' => 'Author Successfully Created'], 201);
+        $rules = array(
+            'author_name' => 'required',
+            'author_contact_number' => 'required',
+            'author_country' => 'required'
+        );
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()) {
+            $validator->errors();
         } else {
-            return Response::json(['message' => 'Something Went Wrong'], 404);
-        }
+            $author = Author::create($data);
 
+            if($author) {
+                return Response::json(['data' => 'Author Successfully Created'], 201);
+            } else {
+                return Response::json(['message' => 'Something Went Wrong'], 404);
+            }
+        }
+        
     }
 
     /**
@@ -80,14 +95,45 @@ class AuthorController extends Controller
      */
     public function update(Request $request, Author $author)
     {
-        //
+        $data = array();
+        $data['author_name'] = $request->author_name;
+        $data['author_contact_number'] = $request->country;
+        $data['author_country'] = $request->country;
+        $data['updated_at'] = Carbon::now();
+
+        $author = Author::where('id', $author->id)->update($data);
+
+        if($author) {
+            return Response::json(['data' => 'Author Successfully Updated'], 201);
+        } else {
+            return Response::json(['message' => 'Something Went Wrong'], 404);
+        }
     }
+
+    // Search for an Author
+    public function search($term) {
+        $author = Author::where('author_name', $term);
+
+        if($author) {
+            return Response::json(['data' => $author], 200);
+        } else {
+            return Response::json(['message' => 'Author Not Found'], 404);
+        }
+
+    }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Author $author)
     {
-        //
+        $author = Author::where('id', $author->id())->delete();
+
+        if($author) {
+            return Response::json(['data' => 'Author Successfully Deleted'], 200);
+        } else {
+            return Response::json(['message' => 'Something Went Wrong'], 404);
+        }
     }
 }
