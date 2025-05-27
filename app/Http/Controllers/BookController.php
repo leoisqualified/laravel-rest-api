@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
@@ -12,7 +15,13 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
+        $books = Book::with('author')->get();
+
+        if(@empty($books)) {
+            return Response::json(['data' => $books], 200);
+        } else {
+            return Response::json(['message' => '404 Not Found'], 404);
+        }
     }
 
     /**
@@ -28,7 +37,32 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = array();
+        $data['author_name'] = $request->author_name;
+        $data['author_contact_number'] = $request->country;
+        $data['author_country'] = $request->country;
+        $data['created_at'] = Carbon::now();
+
+
+        $rules = array(
+            'author_name' => 'required',
+            'author_contact_number' => 'required',
+            'author_country' => 'required'
+        );
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()) {
+            $validator->errors();
+        } else {
+            $author = Book::create($data);
+
+            if($author) {
+                return Response::json(['data' => 'Author Successfully Created'], 201);
+            } else {
+                return Response::json(['message' => 'Something Went Wrong'], 404);
+            }
+        }
     }
 
     /**
@@ -36,7 +70,13 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        //
+        $book = Book::find($book->id);
+
+        if(@empty($author)) {
+            return Response::json(['data' => $book], 200);
+        } else {
+            return Response::json(['message' => '404 Not Found'], 404);
+        }
     }
 
     /**
@@ -52,7 +92,19 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        //
+        $data = array();
+        $data['author_name'] = $request->author_name;
+        $data['author_contact_number'] = $request->country;
+        $data['author_country'] = $request->country;
+        $data['updated_at'] = Carbon::now();
+
+        $book = Book::where('id', $book->id)->update($data);
+
+        if($book) {
+            return Response::json(['data' => 'Author Successfully Updated'], 201);
+        } else {
+            return Response::json(['message' => 'Something Went Wrong'], 404);
+        }
     }
 
     /**

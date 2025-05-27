@@ -6,7 +6,7 @@ use App\Models\Author;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
 
 class AuthorController extends Controller
@@ -40,16 +40,18 @@ class AuthorController extends Controller
     public function store(Request $request)
     {
         $data = array();
-        $data['author_name'] = $request->author_name;
-        $data['author_contact_number'] = $request->country;
-        $data['author_country'] = $request->country;
+        $data['book_title'] = $request->book_title;
+        $data['book_isbn'] = $request->book_isbn;
+        $data['book_price'] = $request->book_price;
+        $data['author_id'] = $request->author_id;
         $data['created_at'] = Carbon::now();
 
 
         $rules = array(
-            'author_name' => 'required',
-            'author_contact_number' => 'required',
-            'author_country' => 'required'
+            'book_title' => 'required',
+            'book_isbn' => 'required',
+            'book_price' => 'required',
+            'author_id' => 'required',
         );
 
         $validator = Validator::make($request->all(), $rules);

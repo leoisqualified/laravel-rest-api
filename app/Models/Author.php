@@ -17,4 +17,8 @@ class Author extends Model
         'updated_at'
     ];
 
+    public function book() {
+        return $this->hasMany(Book::class);
+    }
+
 }
